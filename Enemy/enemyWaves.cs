@@ -39,4 +39,55 @@ public class WaveSpawner : MonoBehaviour {
     }
 
     private float searchCountdown = 1f;
+
+    private SpawnState state =SpawnState.COUNTING;
+    public SpawnState state
+    {
+        get { return state; }
+    }
+
+    void Start()
+    {
+        if (spawnPoints.Length == 0)
+        {
+              Debug.LogError("No spawn points refrenced.");
+        }
+        waveCountdown = timeBetweenWaves;
+    }
+
+    void Update()
+    {
+        if (state == SpawnState.WAITING)
+        {
+            if (EnemyIsAlive() || !waves[currentWave].shouldWaitWaveClear)
+            {
+                WaveCompleted(waves[currentWave]);
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        if (waveCountdown <= 0 || nextWave == 0)
+        {
+
+            if (state != SpawnState.SPAWNING)
+            {
+                StartCoroutine( SpawnWave (waves[nextWave]));
+            }
+        }
+        else
+        {
+            waveCountdown -= Time.deltaTime;
+        }
+    }
+
+    void WaveCompleted(WaVE _wave)
+    {
+        Debug.Log("Wave Completed");
+        _wave.OnWaveEnd.Invoke();
+
+        state = SpawnState
+    }
 }
